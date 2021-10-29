@@ -1,6 +1,6 @@
 # About this Repo
 
-This is the Git repo of the Docker image for Odoo environment. 
+This is the Git repo of the Docker image for Odoo 14[^1]/15 environment without source code. You must mount the container directory `/usr/lib/python3/dist-packages/odoo` and put the source code[^2] here.
 
 `docker-compose.yml` Example:
 
@@ -28,4 +28,7 @@ services:
 ```
 
 > You must set the owner ID to 101 for the mounted volume, e.g.: `chown 101:101 ./web-data`
+
+[^1]: Version 14.0.20210114 is last condensed version (Not contain additional website themes)
+[^2]: The source code is all files in the directory where `addons` is located
 

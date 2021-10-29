@@ -4,10 +4,10 @@ MAINTAINER Odoo S.A. <info@odoo.com>
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
 ### Replace mirror apt source
-RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian/ buster main" > /etc/apt/sources.list \
-    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main" >> /etc/apt/sources.list \
-    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main" >> /etc/apt/sources.list \
-    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main" >> /etc/apt/sources.list
+#RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian/ buster main" > /etc/apt/sources.list \
+#    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main" >> /etc/apt/sources.list \
+#    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main" >> /etc/apt/sources.list \
+#    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main" >> /etc/apt/sources.list
 
 ### Install locale zh_CN
 RUN apt-get update \
@@ -45,7 +45,7 @@ RUN apt-get update && \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
-    && curl -o wkhtmltox.deb -sSL https://hub.fastgit.org/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
+    && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
     && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
     && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
@@ -69,12 +69,12 @@ RUN npm install -g rtlcss
 
 # Install Odoo
 ENV ODOO_VERSION 14.0
-ARG ODOO_RELEASE=20211001
-ARG ODOO_SHA=226f50775feb095ea549765eef70f0416830892d
+ARG ODOO_RELEASE=20210114
+ARG ODOO_SHA=1b01bc387a4b85ab37e6ae152240b7f432954fda
 
 ### Download from local http server
-RUN curl -o odoo.deb -sSL "http://192.168.39.9/odoo/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb" \
-#RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
+#RUN curl -o odoo.deb -sSL "http://192.168.39.9/odoo/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb" \
+RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
     && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
@@ -82,7 +82,7 @@ RUN curl -o odoo.deb -sSL "http://192.168.39.9/odoo/deb/odoo_${ODOO_VERSION}.${O
     && rm -rf /usr/lib/python3/dist-packages/odoo/*
 
 ### Install local deb package(Test only)
-#COPY ./odoo_14.0+e.20210921_all.deb odoo.deb
+#COPY ./odoo_14.0+e.20210114_all.deb odoo.deb
 #RUN apt-get update \
 #    && apt-get -y install --no-install-recommends ./odoo.deb \
 #    && rm -rf /var/lib/apt/lists/* odoo.deb
