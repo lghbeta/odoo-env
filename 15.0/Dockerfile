@@ -45,6 +45,7 @@ RUN apt-get update && \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
+        inetutils-ping net-tools python3-redis python3-boto3\
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
     && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -69,8 +70,8 @@ RUN npm install -g rtlcss
 
 # Install Odoo
 ENV ODOO_VERSION 15.0
-ARG ODOO_RELEASE=20211229
-ARG ODOO_SHA=9cb4888027bb55afc7dab2cef2d5ffb4f6ebce12
+ARG ODOO_RELEASE=20220204
+ARG ODOO_SHA=6f7f4163fb5c73a24df365ca392fad120c9973df
 ### Download from local http server
 #RUN curl -o odoo.deb -sSL "http://192.168.39.9/odoo/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb" \
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
