@@ -1,10 +1,11 @@
 name: Build docker image
 
+# manual run or push new tags
 on:
   workflow_dispatch:
   push:
     tags:
-      - '*'
+      - '1*'
 
 jobs:
   push_to_registry:
@@ -25,11 +26,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: aniven/odoo-env
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: ./15.0
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            type=pep440,pattern={{version}}
+            type=pep440,pattern={{major}}
