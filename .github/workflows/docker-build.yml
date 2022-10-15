@@ -1,13 +1,13 @@
 name: Build docker image
 
-# manual run or push new tags
+# manually run or push new tags
 on:
   workflow_dispatch:
   push:
     branches:
       - '!master'
     tags:
-      - '1*'
+      - '15*'
 
 jobs:
   push_to_registry:
