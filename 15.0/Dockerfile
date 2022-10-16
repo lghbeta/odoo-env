@@ -90,7 +90,8 @@ COPY ./odoo.conf /etc/odoo/
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
+    && chown -R odoo /mnt/extra-addons \
+    && chmod 755 /entrypoint.sh
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python3/dist-packages/odoo"]
 
 # Expose Odoo services
