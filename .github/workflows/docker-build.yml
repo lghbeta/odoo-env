@@ -7,7 +7,7 @@ on:
     branches:
       - '!master'
     tags:
-      - '15*'
+      - '16*'
 
 jobs:
   push_to_registry:
@@ -35,7 +35,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./15.0
+          context: ./16.0
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

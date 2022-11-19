@@ -1,10 +1,24 @@
 FROM debian:bullseye-slim
-MAINTAINER Odoo S.A. <info@odoo.com>
+MAINTAINER LGHBETA <lghbeta@gmail.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
+### Replace mirror apt source
+#RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main" > /etc/apt/sources.list \
+#    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main" >> /etc/apt/sources.list \
+#    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-backports main" >> /etc/apt/sources.list \
+#    && echo "#deb http://mirrors.tuna.tsinghua.edu.cn/debian-security bullseye/updates main" >> /etc/apt/sources.list
+
+### Install locale zh_CN
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i zh_CN -c -f UTF-8 -A /usr/share/locale/locale.alias zh_CN.UTF-8
+
+ENV LANG zh_CN.UTF-8
+
 # Generate locale C.UTF-8 for postgres and general locale data
-ENV LANG C.UTF-8
+#ENV LANG C.UTF-8
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN apt-get update && \
@@ -31,6 +45,7 @@ RUN apt-get update && \
         python3-xlrd \
         python3-xlwt \
         xz-utils \
+        inetutils-ping net-tools python3-redis \
     && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
     && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
     && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
@@ -55,31 +70,32 @@ RUN npm install -g rtlcss
 
 # Install Odoo
 ENV ODOO_VERSION 16.0
-ARG ODOO_RELEASE=20221012
-ARG ODOO_SHA=f34bc089609c2a7da65f25f29cf4e0218c7af464
+ARG ODOO_RELEASE=20221116
+ARG ODOO_SHA=ccf93359e8685c4d47d15636cc0c6a1f8ae9b52e
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
     && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
     && apt-get -y install --no-install-recommends ./odoo.deb \
-    && rm -rf /var/lib/apt/lists/* odoo.deb
+    && rm -rf /var/lib/apt/lists/* odoo.deb \
+    && rm -rf /usr/lib/python3/dist-packages/odoo/*
 
 # Copy entrypoint script and Odoo configuration file
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
+COPY ./wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
-    && chown -R odoo /mnt/extra-addons
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons"]
+    && chown -R odoo /mnt/extra-addons \
+    && chmod 755 /entrypoint.sh /usr/local/bin/wait-for-psql.py
+VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python3/dist-packages/odoo"]
 
 # Expose Odoo services
 EXPOSE 8069 8071 8072
 
 # Set the default config file
 ENV ODOO_RC /etc/odoo/odoo.conf
-
-COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Set default user when running the container
 USER odoo
