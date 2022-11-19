@@ -3,6 +3,7 @@ import argparse
 import psycopg2
 import sys
 import time
+import os
 
 
 if __name__ == '__main__':
