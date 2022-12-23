@@ -92,7 +92,7 @@ COPY ./wait-for-psql.py /usr/local/bin/wait-for-psql.py
 RUN chown odoo /etc/odoo/odoo.conf \
     && mkdir -p /mnt/extra-addons \
     && chown -R odoo /mnt/extra-addons \
-    && chmod 755 /entrypoint.sh /usr/local/bin/wait-for-psql.py /
+    && chmod 755 /entrypoint.sh /usr/local/bin/wait-for-psql.py
 VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/usr/lib/python3/dist-packages/odoo"]
 
 # Expose Odoo services
