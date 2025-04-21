@@ -42,7 +42,7 @@ RUN apt-get update && \
         python3-watchdog \
         python3-xlrd \
         python3-xlwt \
-        inetutils-ping net-tools python3-redis \
+        python3-boto3 inetutils-ping net-tools python3-redis \
         xz-utils && \
     if [ -z "${TARGETARCH}" ]; then \
         TARGETARCH="$(dpkg --print-architecture)"; \
@@ -74,7 +74,7 @@ RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ noble-pgdg main' > /etc/a
 
 # Install rtlcss (on Debian buster)
 RUN npm install -g rtlcss \
-    && pip3 install boto3 oss2
+    && pip install oss2 --no-cache-dir --break-system-packages --root-user-action=ignore
 
 # Install Odoo
 ENV ODOO_VERSION 18.0
